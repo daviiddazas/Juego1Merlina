@@ -1,0 +1,8 @@
+{
+  "name": "Remix Portal de Nunca Más: Test de Personalidad Wednesday",
+  "description": "Descubre tu verdadera alma de excluido en la Academia Nevermore a través del sombrío test de personalidad de la serie Wednesday.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
