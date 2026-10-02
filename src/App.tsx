@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Header } from './components/Header';
 import { GuardianBanner } from './components/GuardianBanner';
 import { StepQuiz } from './components/StepQuiz';
@@ -23,21 +23,14 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'quiz' | 'window' | 'roster'>('quiz');
   const [quizMode, setQuizMode] = useState<'step' | 'scroll'>('step');
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+  const [questions, setQuestions] = useState<QuizQuestion[]>(() => generateShuffledQuestions());
   const [answers, setAnswers] = useState<Record<number, string>>({}); // questionId -> optionId
   const [result, setResult] = useState<QuizResult | null>(null);
   const [studentName, setStudentName] = useState('Estudiante Excluido');
-  const [matriculaId, setMatriculaId] = useState('');
+  const [matriculaId, setMatriculaId] = useState(() => `NVM-2026-${Math.floor(1000 + Math.random() * 9000)}`);
   const [guardianMessage, setGuardianMessage] = useState(
     'Bienvenido seas, mortal o excluido. La Familia Addams y los marginados de Nunca Más aguardan para juzgar tu alma.'
   );
-
-  // Initialize questions with shuffled options on mount
-  useEffect(() => {
-    setQuestions(generateShuffledQuestions());
-    const randomHex = Math.floor(1000 + Math.random() * 9000);
-    setMatriculaId(`NVM-2026-${randomHex}`);
-  }, []);
 
   const totalQuestions = questions.length;
   const currentQuestion = questions[currentStepIndex];

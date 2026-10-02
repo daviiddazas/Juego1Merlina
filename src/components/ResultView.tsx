@@ -4,6 +4,7 @@ import { CHARACTERS } from '../data/nevermoreData';
 import { NEVERMORE_ASSETS, CHARACTER_PORTRAITS } from '../assets/imagePaths';
 import { downloadNevermoreIdCard } from '../utils/cardCanvas';
 import { gothicAudio } from '../utils/audio';
+import { copyToClipboard } from '../utils/clipboard';
 import { Copy, Check, Download, RefreshCw, Share2, Award, Sparkles } from 'lucide-react';
 
 interface ResultViewProps {
@@ -26,8 +27,8 @@ export const ResultView: React.FC<ResultViewProps> = ({
   const character = result.topCharacter;
   const portraitUrl = CHARACTER_PORTRAITS[character.id];
 
-  const handleCopyPrompt = () => {
-    navigator.clipboard.writeText(character.promptGenerative);
+  const handleCopyPrompt = async () => {
+    await copyToClipboard(character.promptGenerative);
     setCopied(true);
     gothicAudio.playParchment();
     setTimeout(() => setCopied(false), 2500);
@@ -42,27 +43,31 @@ export const ResultView: React.FC<ResultViewProps> = ({
     gothicAudio.playSealStamp();
     try {
       await downloadNevermoreIdCard(character, studentName, result.matriculaId);
+    } catch {
+      // Graceful fallback if canvas export was blocked
     } finally {
       setIsDownloading(false);
     }
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     gothicAudio.playParchment();
     const shareText = `¡He sido clasificado en el Portal de Nunca Más como "${character.name}" (${character.outcastTitle})! 🖤🦇 Descubre tu personaje de Wednesday en el Portal de Nevermore.`;
-    if (navigator.share) {
-      navigator.share({
-        title: 'Mi Credencial de Nevermore Academy',
-        text: shareText,
-        url: window.location.href,
-      }).catch(() => {
-        // user cancelled
-      });
-    } else {
-      navigator.clipboard.writeText(shareText + ' ' + window.location.href);
-      setSharedToast(true);
-      setTimeout(() => setSharedToast(false), 3000);
+    if (navigator?.share) {
+      try {
+        await navigator.share({
+          title: 'Mi Credencial de Nevermore Academy',
+          text: shareText,
+          url: window.location.href,
+        });
+        return;
+      } catch {
+        // user cancelled or share failed, fallback to clipboard
+      }
     }
+    await copyToClipboard(shareText + ' ' + window.location.href);
+    setSharedToast(true);
+    setTimeout(() => setSharedToast(false), 3000);
   };
 
   return (

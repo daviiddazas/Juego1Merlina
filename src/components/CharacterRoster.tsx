@@ -3,6 +3,7 @@ import { CHARACTERS } from '../data/nevermoreData';
 import { Character, CharacterId } from '../types';
 import { CHARACTER_PORTRAITS } from '../assets/imagePaths';
 import { gothicAudio } from '../utils/audio';
+import { copyToClipboard } from '../utils/clipboard';
 import { Copy, Check } from 'lucide-react';
 
 export const CharacterRoster: React.FC = () => {
@@ -13,8 +14,8 @@ export const CharacterRoster: React.FC = () => {
   const character = CHARACTERS[selectedId];
   const portraitUrl = CHARACTER_PORTRAITS[character.id];
 
-  const handleCopyPrompt = (prompt: string) => {
-    navigator.clipboard.writeText(prompt);
+  const handleCopyPrompt = async (prompt: string) => {
+    await copyToClipboard(prompt);
     setCopiedPrompt(true);
     gothicAudio.playParchment();
     setTimeout(() => setCopiedPrompt(false), 2000);

@@ -96,7 +96,10 @@ export async function downloadNevermoreIdCard(
   if (portraitUrl) {
     try {
       const img = new Image();
-      img.crossOrigin = 'anonymous';
+      // Only set crossOrigin if the image is from an external remote domain
+      if (portraitUrl.startsWith('http://') || portraitUrl.startsWith('https://')) {
+        img.crossOrigin = 'anonymous';
+      }
       img.src = portraitUrl;
       await new Promise<void>((resolve, reject) => {
         img.onload = () => resolve();
